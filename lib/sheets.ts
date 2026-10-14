@@ -79,10 +79,11 @@ type Rows<T> = { item: T; row: number }[];
 async function readSheet(): Promise<{
   leaders: Rows<Leader>; events: Rows<LeaderEvent>; leaderHeader: string[]; eventHeader: string[];
 }> {
-  const res = await sheetsFetch("/values:batchGet?ranges=leaders&ranges=events");
-  const [lv, ev] = ((await res.json()) as { valueRanges: { values?: string[][] }[] }).valueRanges;
-  const [leaderHeader, ...leaderRows] = lv.values ?? [[]];
-  const [eventHeader, ...eventRows] = ev.values ?? [[]];
+  // 서식(천 단위 쉼표 등)과 무관하게 원래 값을 읽는다
+  const res = await sheetsFetch("/values:batchGet?ranges=leaders&ranges=events&valueRenderOption=UNFORMATTED_VALUE");
+  const [lv, ev] = ((await res.json()) as { valueRanges: { values?: unknown[][] }[] }).valueRanges;
+  const [leaderHeader, ...leaderRows] = (lv.values ?? [[]]).map((r) => r.map((v) => String(v ?? "")));
+  const [eventHeader, ...eventRows] = (ev.values ?? [[]]).map((r) => r.map((v) => String(v ?? "")));
   requireColumns("leaders", leaderHeader, Object.values(LEADER_COLS));
   requireColumns("events", eventHeader, Object.values(EVENT_COLS));
 
@@ -135,9 +136,20 @@ function columnLetter(index: number): string {
 
 // ── Google 인증 (서비스 계정 JWT) ───────────────────────
 
+function serviceAccountKey(): { client_email: string; private_key: string } {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY!;
+  // .env에서 큰따옴표로 감싸면 키 안의 \n이 실제 줄바꿈으로 바뀌어 JSON이 깨진다. 한 번 되돌려 본다.
+  for (const text of [raw, raw.replace(/\n/g, "\\n")]) {
+    try {
+      return JSON.parse(text);
+    } catch {}
+  }
+  throw new Error("GOOGLE_SERVICE_ACCOUNT_KEY가 올바른 JSON이 아닙니다");
+}
+
 async function accessToken(): Promise<string> {
   if (store.token && Date.now() < store.token.exp - 60_000) return store.token.value;
-  const key = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY!) as { client_email: string; private_key: string };
+  const key = serviceAccountKey();
   const now = Math.floor(Date.now() / 1000);
   const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString("base64url");
   const unsigned = `${b64({ alg: "RS256", typ: "JWT" })}.${b64({
