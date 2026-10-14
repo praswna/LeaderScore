@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>LeaderScore Design Concepts</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #e9e9e9; display: flex; gap: 24px; padding: 24px; font-family: "Noto Sans KR", sans-serif; }
+  .phone { width: 390px; height: 800px; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,.15); }
+  .row { display: flex; align-items: center; }
+  .sp { flex: 1; }
+  .scroll { display: flex; gap: 8px; overflow: hidden; white-space: nowrap; }
+  .grow { flex: 1; overflow: hidden; }
+  .nav { display: flex; justify-content: space-around; padding: 10px 0 22px; font-size: 11px; }
+  .nav div { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .nav svg { width: 22px; height: 22px; }
+  .ev { display: flex; align-items: center; gap: 8px; padding: 9px 0; font-size: 13px; }
+  .ev .t { flex: 1; min-width: 0; }
+  .ev .y { font-size: 11px; display: block; }
+  .bar { height: 4px; border-radius: 2px; margin-top: 5px; }
+
+  /* ───────── A. 모던 미니멀 ───────── */
+  .a { background: #f4f5f7; color: #16181d; }
+  .a .top { background: #fff; padding: 16px 16px 0; }
+  .a .c1 button { border: none; background: none; font: inherit; font-size: 17px; font-weight: 700; color: #b5b9c2; padding: 0 4px 0 0; }
+  .a .c1 button.on { color: #16181d; }
+  .a .c2 { padding: 12px 0 0; border-bottom: 1px solid #eceef1; }
+  .a .c2 span { font-size: 14px; color: #8a909b; padding: 0 2px 10px; margin-right: 12px; }
+  .a .c2 span.on { color: #16181d; font-weight: 700; box-shadow: inset 0 -2px #16181d; }
+  .a .tools { padding: 10px 16px; gap: 6px; }
+  .a .pill { font-size: 12px; padding: 5px 10px; border-radius: 99px; background: #fff; color: #8a909b; }
+  .a .pill.on { background: #16181d; color: #fff; }
+  .a .track { display: flex; gap: 10px; padding: 0 16px; }
+  .a .card { flex: 0 0 336px; background: #fff; border-radius: 20px; padding: 20px 18px; box-shadow: 0 1px 3px rgba(0,0,0,.05); }
+  .a .peek { flex: 0 0 40px; background: #fff; border-radius: 20px 0 0 20px; }
+  .a .role { font-size: 12px; color: #8a909b; }
+  .a .name { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; }
+  .a .total { font-size: 34px; font-weight: 900; color: #2b6cf6; letter-spacing: -1px; }
+  .a .totlabel { font-size: 11px; color: #8a909b; text-align: right; }
+  .a .split { display: flex; gap: 8px; margin: 16px 0 6px; }
+  .a .split div { flex: 1; border-radius: 12px; padding: 8px 10px; font-size: 13px; font-weight: 700; display: flex; justify-content: space-between; }
+  .a .merit { background: #edf3ff; color: #2b6cf6; }
+  .a .fault { background: #fff0f0; color: #e5484d; }
+  .a .cols2 { display: flex; gap: 8px; } .a .cols2 > div { flex: 1; min-width: 0; }
+  .a .ev { border-bottom: 1px solid #f1f2f4; font-size: 12.5px; gap: 4px; }
+  .a .ev .y { color: #a3a8b1; }
+  .a .ev b { font-weight: 700; width: 26px; text-align: right; align-self: flex-start; padding-top: 14px; }
+  .a .sum { font-size: 12.5px; color: #6b717c; line-height: 1.6; margin-top: 12px; background: #f7f8fa; border-radius: 10px; padding: 10px 12px; }
+  .a .nav { background: #fff; border-top: 1px solid #eceef1; color: #a3a8b1; }
+  .a .nav .on { color: #16181d; font-weight: 700; }
+
+  /* ───────── B. 사관의 기록 (한지·먹) ───────── */
+  .b { background: #f3ede1; color: #2a2420; font-family: "Noto Serif KR", serif; }
+  .b .top { padding: 18px 18px 0; }
+  .b .brand { font-size: 13px; letter-spacing: 4px; color: #9c8f7a; margin-bottom: 10px; }
+  .b .c1 span { font-size: 16px; color: #a99c86; padding: 4px 2px; margin-right: 10px; }
+  .b .c1 span.on { color: #2a2420; font-weight: 700; border-bottom: 2px solid #2a2420; }
+  .b .c2 { padding: 10px 0 12px; }
+  .b .c2 span { font-size: 13px; color: #9c8f7a; border: 1px solid #d8ccb6; border-radius: 3px; padding: 3px 9px; }
+  .b .c2 span.on { background: #2a2420; color: #f3ede1; border-color: #2a2420; }
+  .b .tools { padding: 0 18px 10px; gap: 10px; font-size: 12px; color: #9c8f7a; }
+  .b .tools .on { color: #2a2420; font-weight: 700; }
+  .b .track { display: flex; gap: 12px; padding: 0 18px; }
+  .b .card { flex: 0 0 330px; background: #fbf8f1; border: 1px solid #e0d5c1; padding: 22px 18px; position: relative; }
+  .b .peek { flex: 0 0 40px; background: #fbf8f1; border: 1px solid #e0d5c1; border-right: none; }
+  .b .seal { position: absolute; right: 16px; top: 18px; width: 64px; height: 64px; border: 2.5px solid #b23a2b; border-radius: 6px; color: #b23a2b; display: flex; flex-direction: column; align-items: center; justify-content: center; transform: rotate(-4deg); }
+  .b .seal small { font-size: 10px; letter-spacing: 2px; }
+  .b .seal b { font-size: 22px; font-weight: 900; line-height: 1; }
+  .b .role { font-size: 12px; color: #9c8f7a; letter-spacing: 2px; }
+  .b .name { font-size: 30px; font-weight: 900; margin: 2px 0 2px; }
+  .b .reign { font-size: 12px; color: #9c8f7a; }
+  .b .cols { display: flex; margin-top: 18px; border-top: 1px solid #2a2420; }
+  .b .col { flex: 1; padding: 10px 10px 0 0; }
+  .b .col + .col { border-left: 1px solid #d8ccb6; padding: 10px 0 0 10px; }
+  .b .head { font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; padding-bottom: 6px; border-bottom: 1px solid #d8ccb6; }
+  .b .head.m { color: #1f3a5f; } .b .head.f { color: #b23a2b; }
+  .b .ev { font-size: 12.5px; padding: 7px 0; border-bottom: 1px dotted #d8ccb6; }
+  .b .ev .y { color: #a99c86; font-size: 10.5px; }
+  .b .ev b.m { color: #1f3a5f; } .b .ev b.f { color: #b23a2b; }
+  .b .sum { font-size: 12.5px; line-height: 1.8; color: #5e5346; margin-top: 14px; padding-top: 10px; border-top: 1px solid #d8ccb6; }
+  .b .nav { border-top: 1px solid #d8ccb6; color: #a99c86; background: #efe7d7; }
+  .b .nav .on { color: #2a2420; font-weight: 700; }
+
+  /* ───────── C. 스코어보드 (다크) ───────── */
+  .c { background: #0e1014; color: #e9ecf1; }
+  .c .top { padding: 16px 16px 0; }
+  .c .c1 span { font-size: 13px; color: #6d7380; background: #1a1d24; border-radius: 99px; padding: 6px 13px; }
+  .c .c1 span.on { background: #e9ecf1; color: #0e1014; font-weight: 700; }
+  .c .c2 { padding: 12px 0; gap: 14px; }
+  .c .c2 span { font-size: 13px; color: #6d7380; }
+  .c .c2 span.on { color: #e9ecf1; font-weight: 700; }
+  .c .tools { padding: 0 16px 10px; gap: 6px; }
+  .c .pill { font-size: 11px; padding: 4px 9px; border-radius: 6px; background: #1a1d24; color: #6d7380; }
+  .c .pill.on { color: #e9ecf1; background: #2a2e38; }
+  .c .track { display: flex; gap: 10px; padding: 0 16px; }
+  .c .card { flex: 0 0 336px; background: #161920; border-radius: 18px; padding: 20px 16px; border: 1px solid #22262f; }
+  .c .peek { flex: 0 0 40px; background: #161920; border-radius: 18px 0 0 18px; border: 1px solid #22262f; }
+  .c .role { font-size: 11px; color: #6d7380; letter-spacing: 1px; }
+  .c .name { font-size: 24px; font-weight: 900; }
+  .c .total { font-size: 44px; font-weight: 900; color: #3ddc97; letter-spacing: -2px; line-height: 1; }
+  .c .gauge { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 16px 0 6px; background: #22262f; }
+  .c .gauge .m { background: #3ddc97; } .c .gauge .f { background: #ff5c6c; }
+  .c .gl { display: flex; font-size: 13px; font-weight: 900; margin-bottom: 4px; } .c .gl span { flex: 1; }
+  .c .cols2 { display: flex; gap: 10px; } .c .cols2 > div { flex: 1; min-width: 0; }
+  .c .ev { border-bottom: 1px solid #1f232b; font-size: 12.5px; gap: 4px; }
+  .c .ev .y { color: #6d7380; }
+  .c .ev b { width: 26px; text-align: right; font-weight: 900; align-self: flex-start; padding-top: 14px; }
+  .c .sum { font-size: 12.5px; color: #8c93a0; line-height: 1.6; margin-top: 12px; }
+  .c .nav { border-top: 1px solid #1f232b; color: #6d7380; background: #0e1014; }
+  .c .nav .on { color: #e9ecf1; }
+
+  .label { position: absolute; bottom: 70px; left: 0; right: 0; text-align: center; font-size: 11px; opacity: .0; }
+</style>
+</head>
+<body>
+
+<!-- A -->
+<div class="phone a" data-name="concept-a-modern">
+  <div class="top">
+    <div class="scroll c1"><button class="on">한국</button><button>중국</button><button>일본</button><button>미국</button><button>유럽</button><button>러시아</button></div>
+    <div class="scroll c2"><span>삼국</span><span>남북국</span><span>고려</span><span class="on">조선</span><span>대한제국</span><span>임시정부</span></div>
+  </div>
+  <div class="row tools"><span class="pill on">카드</span><span class="pill">리스트</span><span class="sp"></span><span class="pill on">시간순</span><span class="pill">점수순</span></div>
+  <div class="grow"><div class="track">
+    <div class="card">
+      <div class="row"><div class="sp"><div class="role">군주 · 1418–1450</div><div class="name">세종</div></div><div><div class="total">+35</div><div class="totlabel">종합</div></div></div>
+      <div class="split"><div class="merit"><span>공</span><span>+38</span></div><div class="fault"><span>과</span><span>−3</span></div></div>
+      <div class="cols2"><div id="a-merit"></div><div id="a-fault"></div></div>
+      <div class="sum" id="a-sum"></div>
+    </div>
+    <div class="peek"></div>
+  </div></div>
+  <div class="nav" id="a-nav"></div>
+</div>
+
+<!-- B -->
+<div class="phone b" data-name="concept-b-archive">
+  <div class="top">
+    <div class="brand">LEADERSCORE · 군주실록</div>
+    <div class="scroll c1"><span class="on">한국</span><span>중국</span><span>일본</span><span>미국</span><span>유럽</span><span>러시아</span></div>
+    <div class="scroll c2"><span>삼국</span><span>남북국</span><span>고려</span><span class="on">조선</span><span>대한제국</span><span>임시정부</span></div>
+  </div>
+  <div class="row tools"><span class="on">카드</span><span>리스트</span><span class="sp"></span><span class="on">시간순</span><span>점수순</span></div>
+  <div class="grow"><div class="track">
+    <div class="card">
+      <div class="seal"><small>종합</small><b>+35</b></div>
+      <div class="role">군주</div>
+      <div class="name">세종</div>
+      <div class="reign">재위 1418 – 1450</div>
+      <div class="cols">
+        <div class="col"><div class="head m"><span>功 공</span><span>+38</span></div><div id="b-merit"></div></div>
+        <div class="col"><div class="head f"><span>過 과</span><span>−3</span></div><div id="b-fault"></div></div>
+      </div>
+      <div class="sum" id="b-sum"></div>
+    </div>
+    <div class="peek"></div>
+  </div></div>
+  <div class="nav" id="b-nav"></div>
+</div>
+
+<!-- C -->
+<div class="phone c" data-name="concept-c-scoreboard">
+  <div class="top">
+    <div class="scroll c1"><span class="on">한국</span><span>중국</span><span>일본</span><span>미국</span><span>유럽</span></div>
+    <div class="scroll c2"><span>삼국</span><span>남북국</span><span>고려</span><span class="on">조선</span><span>대한제국</span><span>임시정부</span></div>
+  </div>
+  <div class="row tools"><span class="pill on">카드</span><span class="pill">리스트</span><span class="sp"></span><span class="pill on">시간순</span><span class="pill">점수순</span></div>
+  <div class="grow"><div class="track">
+    <div class="card">
+      <div class="row" style="align-items:flex-end"><div class="sp"><div class="role">군주 · 1418–1450</div><div class="name">세종</div></div><div class="total">+35</div></div>
+      <div class="gauge"><div class="m" style="width:92.7%"></div><div class="f" style="width:7.3%"></div></div>
+      <div class="gl"><span style="color:#3ddc97">공 +38</span><span style="color:#ff5c6c">과 −3</span></div>
+      <div class="cols2"><div id="c-merit"></div><div id="c-fault"></div></div>
+      <div class="sum" id="c-sum"></div>
+    </div>
+    <div class="peek"></div>
+  </div></div>
+  <div class="nav" id="c-nav"></div>
+</div>
+
+<script>
+  const EV = [[1420,"집현전 확대 개편",6],[1429,"『농사직설』 편찬",5],[1432,"노비종모법 환원",-3],[1433,"4군 6진 개척",7],[1441,"측우기 제작",5],[1443,"훈민정음 창제",10],[1444,"공법 제정",5]];
+  const SUM = "훈민정음 창제와 과학·농업·국방의 성과로 조선 전기의 전성기를 이끌었다. 노비종모법 환원처럼 신분제를 강화한 조치도 있었다.";
+  const f = (n) => (n > 0 ? "+" : "−") + Math.abs(n);
+  const ICONS = [["지도자","M4 20c0-4 4-6 8-6s8 2 8 6M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8"],["랭킹","M5 20V12M12 20V5M19 20v-5"],["AI 프롬프트","M4 5h16v11H9l-5 4zM8 9h8M8 12h5"]];
+  for (const k of ["a","b","c"]) document.getElementById(k+"-nav").innerHTML = ICONS.map(([l,d],i)=>`<div class="${i?"":"on"}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>${l}</div>`).join("");
+  for (const k of ["a","b","c"]) document.getElementById(k+"-sum").textContent = SUM;
+
+  // A: 공/과 두 칸 + 크기 막대
+  const aItem = ([y,t,s]) => `<div class="ev"><div class="t"><span class="y">${y}</span>${t}<div class="bar" style="width:${Math.abs(s)*10}%;background:${s>0?"#2b6cf6":"#e5484d"};opacity:.7"></div></div><b style="color:${s>0?"#2b6cf6":"#e5484d"}">${f(s)}</b></div>`;
+  document.getElementById("a-merit").innerHTML = EV.filter(e=>e[2]>0).map(aItem).join("");
+  document.getElementById("a-fault").innerHTML = EV.filter(e=>e[2]<0).map(aItem).join("");
+  // B: 공/과 두 칸 (목업 배치 그대로)
+  document.getElementById("b-merit").innerHTML = EV.filter(e=>e[2]>0).map(([y,t,s]) => `<div class="ev row"><div class="t"><span class="y">${y}</span>${t}</div><b class="m">${f(s)}</b></div>`).join("");
+  document.getElementById("b-fault").innerHTML = EV.filter(e=>e[2]<0).map(([y,t,s]) => `<div class="ev row"><div class="t"><span class="y">${y}</span>${t}</div><b class="f">${f(s)}</b></div>`).join("");
+  // C: 공/과 두 칸 + 색 점수
+  const cItem = ([y,t,s]) => `<div class="ev"><div class="t"><span class="y">${y}</span>${t}<div class="bar" style="width:${Math.abs(s)*10}%;background:${s>0?"#3ddc97":"#ff5c6c"}"></div></div><b style="color:${s>0?"#3ddc97":"#ff5c6c"}">${f(s)}</b></div>`;
+  document.getElementById("c-merit").innerHTML = EV.filter(e=>e[2]>0).map(cItem).join("");
+  document.getElementById("c-fault").innerHTML = EV.filter(e=>e[2]<0).map(cItem).join("");
+</script>
+</body>
+</html>
