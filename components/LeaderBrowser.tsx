@@ -10,9 +10,15 @@ import type { LeaderEvent, LeaderView } from "@/lib/types.ts";
 
 type View = "card" | "list";
 type Sort = "time" | "score";
-type Role = "all" | "ruler" | "official";
+export type Role = "all" | "ruler" | "official";
 
 const NO_DYNASTY = "";
+
+/** [전체|통치자|관료] 필터에 각 개수를 붙인다 */
+export function roleOptions(leaders: LeaderView[]): [Role, string, number][] {
+  const rulers = leaders.filter((l) => l.isRuler).length;
+  return [["all", "전체", leaders.length], ["ruler", "통치자", rulers], ["official", "관료", leaders.length - rulers]];
+}
 
 export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
   const countries = sortCountries(leaders.map(countryOf));
@@ -46,7 +52,7 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
       <div className="tabs-1 scroll-x">
         {countries.map((c) => (
           <button key={c} className={c === country ? "on" : ""} onClick={() => { setCountry(c); setDynasty(null); }}>
-            {c}
+            {c}<span className="count">{leaders.filter((l) => countryOf(l) === c).length}</span>
           </button>
         ))}
       </div>
@@ -54,14 +60,14 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
         <div className="tabs-2 scroll-x">
           {dynasties.map((d) => (
             <button key={d || "-"} className={d === dynasty ? "on" : ""} onClick={() => setDynasty(d)}>
-              {d || "기타"}
+              {d || "기타"}<span className="count">{inCountry.filter((l) => l.dynasty === d).length}</span>
             </button>
           ))}
         </div>
       )}
       <div className="toolbar">
         <Seg options={[["card", "카드"], ["list", "리스트"]]} value={view} onChange={setView} />
-        {view === "list" && <Seg options={[["all", "전체"], ["ruler", "통치자"], ["official", "관료"]]} value={role} onChange={setRole} />}
+        {view === "list" && <Seg options={roleOptions(shown)} value={role} onChange={setRole} />}
         <span className="sp" />
         <Seg options={[["time", "시간순"], ["score", "점수순"]]} value={sort} onChange={setSort} />
       </div>
@@ -110,16 +116,23 @@ function Cards({ leaders, sort, targetId }: { leaders: LeaderView[]; sort: Sort;
 
   if (!leaders.length) return <p className="empty">지도자가 없습니다.</p>;
   return (
-    <>
+    <div className="track-wrap">
       <div className="track" ref={track} onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / (step() || 1)))}>
         {leaders.map((l) => <Card key={l.id} leader={l} sort={sort} />)}
       </div>
-      <div className="pager">
-        <button className="pager-btn" onClick={() => go(-1)} disabled={index <= 0} aria-label="이전 지도자">‹</button>
-        <span>{Math.min(index + 1, leaders.length)} / {leaders.length}</span>
-        <button className="pager-btn" onClick={() => go(1)} disabled={index >= leaders.length - 1} aria-label="다음 지도자">›</button>
-      </div>
-    </>
+      {index > 0 && <Chevron dir={-1} onClick={() => go(-1)} />}
+      {index < leaders.length - 1 && <Chevron dir={1} onClick={() => go(1)} />}
+    </div>
+  );
+}
+
+function Chevron({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
+  return (
+    <button className={`chevron ${dir > 0 ? "next" : "prev"}`} onClick={onClick} aria-label={dir > 0 ? "다음 지도자" : "이전 지도자"}>
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d={dir > 0 ? "M9 5l7 7-7 7" : "M15 5l-7 7 7 7"} />
+      </svg>
+    </button>
   );
 }
 
