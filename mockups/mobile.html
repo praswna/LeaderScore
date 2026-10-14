@@ -19,9 +19,12 @@
   .arrow { position: absolute; right: 0; padding: 6px 12px; background: #fff; font-size: 18px; }
 
   /* 시대 탭 */
-  .eras { display: flex; gap: 8px; padding: 18px 0 12px 16px; white-space: nowrap; overflow: hidden; }
+  .eras { display: flex; gap: 8px; padding: 18px 0 8px 16px; white-space: nowrap; overflow: hidden; }
   .era { border: 1.5px solid #ccc; color: #999; border-radius: 6px; padding: 6px 12px; font-size: 14px; }
   .era.on { border-color: #222; color: #222; }
+  .eras.sub { padding-top: 0; padding-bottom: 12px; }
+  .eras.sub .era { border: none; padding: 4px 6px; font-size: 13px; }
+  .eras.sub .era.on { text-decoration: underline; text-underline-offset: 5px; }
 
   /* 보기/정렬 툴바 */
   .tools { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-top: 1.5px solid #222; border-bottom: 1.5px solid #222; font-size: 13px; }
@@ -69,8 +72,10 @@
 
 <!-- 06 지도자 · 카드 보기 -->
 <div class="phone" data-tab="leader" data-name="01-leader-card">
-  <div class="eras"><span class="era">고대</span><span class="era on">조선</span><span class="era">근대</span><span class="era">현대</span><span class="era">중세 유럽</span></div>
+  <div class="eras"><span class="era on">한국</span><span class="era">중국</span><span class="era">일본</span><span class="era">유럽</span><span class="era">미국</span><span class="era">기타</span></div>
   <span class="arrow" style="top:14px">→</span>
+  <div class="eras sub"><span class="era">삼국</span><span class="era">고려</span><span class="era on">조선</span><span class="era">대한제국</span><span class="era">대한민국</span></div>
+  <span class="arrow" style="top:58px">→</span>
   <div class="tools">
     <div class="seg"><span class="on">카드</span><span>리스트</span></div>
     <span class="sp"></span>
@@ -79,7 +84,7 @@
   <div class="track">
     <div class="card">
       <div class="name">세종</div>
-      <div class="ai">종합 +23</div>
+      <div class="ai"><span class="muted">군주</span> &nbsp;종합 +23</div>
       <div class="cols">
         <div class="col">
           <div class="head">공 +28</div>
@@ -95,29 +100,32 @@
         </div>
       </div>
     </div>
-    <div class="card"><div class="name">문종</div></div>
+    <div class="card"><div class="name">문종</div><div class="ai"><span class="muted">군주</span></div></div>
   </div>
-  <span class="arrow" style="top:460px">→</span>
+  <span class="arrow" style="top:500px">→</span>
 </div>
 
 <!-- 07 지도자 · 리스트 보기 -->
 <div class="phone" data-tab="leader" data-name="02-leader-list">
-  <div class="eras"><span class="era">고대</span><span class="era on">조선</span><span class="era">근대</span><span class="era">현대</span><span class="era">중세 유럽</span></div>
+  <div class="eras"><span class="era on">한국</span><span class="era">중국</span><span class="era">일본</span><span class="era">유럽</span><span class="era">미국</span><span class="era">기타</span></div>
   <span class="arrow" style="top:14px">→</span>
+  <div class="eras sub"><span class="era">삼국</span><span class="era">고려</span><span class="era on">조선</span><span class="era">대한제국</span><span class="era">대한민국</span></div>
+  <span class="arrow" style="top:58px">→</span>
   <div class="tools">
     <div class="seg"><span>카드</span><span class="on">리스트</span></div>
     <span class="sp"></span>
     <div class="seg"><span class="on">시간순</span><span>점수순</span></div>
   </div>
   <div class="body" style="gap:0;padding-top:4px">
-    <div class="li muted" style="font-size:12px"><span class="sp">재위</span><span style="width:44px">공</span><span style="width:44px">과</span><span style="width:30px">종합</span></div>
-    <div class="li"><span class="sp">태조 <small class="muted">1392–</small></span><span style="width:44px">+20</span><span style="width:44px">−8</span><span style="width:30px">+12</span></div>
-    <div class="li"><span class="sp">태종 <small class="muted">1400–</small></span><span style="width:44px">+24</span><span style="width:44px">−12</span><span style="width:30px">+12</span></div>
-    <div class="li"><span class="sp">세종 <small class="muted">1418–</small></span><span style="width:44px">+28</span><span style="width:44px">−5</span><span style="width:30px">+23</span></div>
-    <div class="li"><span class="sp">문종 <small class="muted">1450–</small></span><span style="width:44px">+9</span><span style="width:44px">−1</span><span style="width:30px">+8</span></div>
-    <div class="li"><span class="sp">세조 <small class="muted">1455–</small></span><span style="width:44px">+18</span><span style="width:44px">−15</span><span style="width:30px">+3</span></div>
-    <div class="li"><span class="sp">성종 <small class="muted">1469–</small></span><span style="width:44px">+19</span><span style="width:44px">−4</span><span style="width:30px">+15</span></div>
-    <div class="li"><span class="sp">연산군 <small class="muted">1494–</small></span><span style="width:44px">+2</span><span style="width:44px">−30</span><span style="width:30px">−28</span></div>
+    <div class="li muted" style="font-size:12px"><span class="sp">이름 · 구분 · 재위</span><span style="width:44px">공</span><span style="width:44px">과</span><span style="width:30px">종합</span></div>
+    <div class="li"><span class="sp">태조 <small class="muted">군주 · 1392–</small></span><span style="width:44px">+20</span><span style="width:44px">−8</span><span style="width:30px">+12</span></div>
+    <div class="li"><span class="sp">정도전 <small class="muted">재상 · 1392–</small></span><span style="width:44px">+14</span><span style="width:44px">−6</span><span style="width:30px">+8</span></div>
+    <div class="li"><span class="sp">태종 <small class="muted">군주 · 1400–</small></span><span style="width:44px">+24</span><span style="width:44px">−12</span><span style="width:30px">+12</span></div>
+    <div class="li"><span class="sp">세종 <small class="muted">군주 · 1418–</small></span><span style="width:44px">+28</span><span style="width:44px">−5</span><span style="width:30px">+23</span></div>
+    <div class="li"><span class="sp">문종 <small class="muted">군주 · 1450–</small></span><span style="width:44px">+9</span><span style="width:44px">−1</span><span style="width:30px">+8</span></div>
+    <div class="li"><span class="sp">세조 <small class="muted">군주 · 1455–</small></span><span style="width:44px">+18</span><span style="width:44px">−15</span><span style="width:30px">+3</span></div>
+    <div class="li"><span class="sp">성종 <small class="muted">군주 · 1469–</small></span><span style="width:44px">+19</span><span style="width:44px">−4</span><span style="width:30px">+15</span></div>
+    <div class="li"><span class="sp">연산군 <small class="muted">군주 · 1494–</small></span><span style="width:44px">+2</span><span style="width:44px">−30</span><span style="width:30px">−28</span></div>
   </div>
 </div>
 
@@ -125,19 +133,21 @@
 <div class="phone" data-tab="rank" data-name="03-ranking">
   <div class="title">랭킹</div>
   <div class="tools">
-    <div class="box" style="padding:4px 10px">전체 시대 ▾</div>
+    <div class="box" style="padding:4px 10px">전체 국가 ▾</div>
+    <div class="box" style="padding:4px 10px">전체 구분 ▾</div>
     <span class="sp"></span>
     <span class="muted">종합점수순</span>
   </div>
   <div class="body" style="gap:0;padding-top:4px">
-    <div class="li"><span class="n">1</span><span class="sp">세종 <small class="muted">조선</small></span><span>+23</span></div>
-    <div class="li"><span class="n">2</span><span class="sp">성종 <small class="muted">조선</small></span><span>+15</span></div>
-    <div class="li"><span class="n">3</span><span class="sp">지도자 B <small class="muted">시대</small></span><span>+14</span></div>
-    <div class="li"><span class="n">4</span><span class="sp">태종 <small class="muted">조선</small></span><span>+12</span></div>
-    <div class="li"><span class="n">5</span><span class="sp">태조 <small class="muted">조선</small></span><span>+12</span></div>
-    <div class="li"><span class="n">6</span><span class="sp">문종 <small class="muted">조선</small></span><span>+8</span></div>
-    <div class="li"><span class="n">7</span><span class="sp">세조 <small class="muted">조선</small></span><span>+3</span></div>
-    <div class="li"><span class="n">8</span><span class="sp">연산군 <small class="muted">조선</small></span><span>−28</span></div>
+    <div class="li"><span class="n">1</span><span class="sp">세종 <small class="muted">군주 · 조선</small></span><span>+23</span></div>
+    <div class="li"><span class="n">2</span><span class="sp">성종 <small class="muted">군주 · 조선</small></span><span>+15</span></div>
+    <div class="li"><span class="n">3</span><span class="sp">지도자 B <small class="muted">대통령 · 미국</small></span><span>+14</span></div>
+    <div class="li"><span class="n">4</span><span class="sp">태종 <small class="muted">군주 · 조선</small></span><span>+12</span></div>
+    <div class="li"><span class="n">5</span><span class="sp">태조 <small class="muted">군주 · 조선</small></span><span>+12</span></div>
+    <div class="li"><span class="n">6</span><span class="sp">문종 <small class="muted">군주 · 조선</small></span><span>+8</span></div>
+    <div class="li"><span class="n">7</span><span class="sp">세조 <small class="muted">군주 · 조선</small></span><span>+3</span></div>
+    <div class="li"><span class="n">8</span><span class="sp">연산군 <small class="muted">군주 · 조선</small></span><span>−28</span></div>
+    <div class="li"><span class="n">9</span><span class="sp">이완용 <small class="muted">총리대신 · 대한제국</small></span><span>−41</span></div>
   </div>
 </div>
 
