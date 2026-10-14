@@ -1,10 +1,6 @@
 import LeaderBrowser from "@/components/LeaderBrowser.tsx";
-import { buildViews } from "@/lib/scoring.ts";
-import { getData } from "@/lib/db.ts";
+import { LEADERS } from "@/lib/data.ts";
 
-export const dynamic = "force-dynamic";
-
-export default async function Home({ searchParams }: { searchParams: Promise<{ leader?: string }> }) {
-  const [data, { leader }] = await Promise.all([getData(), searchParams]);
-  return <LeaderBrowser leaders={buildViews(data)} focusId={leader} />;
+export default function Home() {
+  return <LeaderBrowser leaders={LEADERS} />;
 }

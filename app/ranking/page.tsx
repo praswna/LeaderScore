@@ -1,9 +1,7 @@
 import Ranking from "@/components/Ranking.tsx";
-import { buildViews } from "@/lib/scoring.ts";
-import { getData } from "@/lib/db.ts";
+import { LEADERS } from "@/lib/data.ts";
 
-export const dynamic = "force-dynamic";
-
-export default async function RankingPage() {
-  return <Ranking leaders={buildViews(await getData())} />;
+export default function RankingPage() {
+  // 랭킹에는 사건 목록이 필요 없어 빼고 넘긴다
+  return <Ranking leaders={LEADERS.map((l) => ({ ...l, events: [] }))} />;
 }

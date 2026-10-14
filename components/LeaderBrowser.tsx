@@ -14,16 +14,24 @@ type Role = "all" | "ruler" | "official";
 
 const NO_DYNASTY = "";
 
-export default function LeaderBrowser({ leaders, focusId }: { leaders: LeaderView[]; focusId?: string }) {
-  const focus = leaders.find((l) => l.id === focusId);
+export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
   const countries = sortCountries(leaders.map(countryOf));
 
-  const [country, setCountry] = useState(focus ? countryOf(focus) : countries[0]);
-  const [dynastyPick, setDynasty] = useState<string | null>(focus ? focus.dynasty : null);
+  const [country, setCountry] = useState(countries[0]);
+  const [dynastyPick, setDynasty] = useState<string | null>(null);
   const [view, setView] = useState<View>("card");
   const [sort, setSort] = useState<Sort>("time");
   const [role, setRole] = useState<Role>("all");
-  const [cardTarget, setCardTarget] = useState<string | undefined>(focus?.id);
+  const [cardTarget, setCardTarget] = useState<string | undefined>();
+
+  // 랭킹에서 /?leader=id 로 들어오면 그 지도자의 탭과 카드로 이동 (페이지는 정적이라 주소는 브라우저에서 읽는다)
+  useEffect(() => {
+    const focus = leaders.find((l) => l.id === new URLSearchParams(location.search).get("leader"));
+    if (!focus) return;
+    setCountry(countryOf(focus));
+    setDynasty(focus.dynasty);
+    setCardTarget(focus.id);
+  }, [leaders]);
 
   const inCountry = leaders.filter((l) => countryOf(l) === country);
   const dynasties = dynastiesOf(leaders, country);
