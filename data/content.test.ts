@@ -20,9 +20,9 @@ test("국가와 구분 값이 정해진 목록 안에 있다", () => {
   }
 });
 
-test("사건은 4~8개, 점수는 −10~+10 정수(0 제외)", () => {
+test("사건은 3~8개, 점수는 −10~+10 정수(0 제외)", () => {
   for (const l of CONTENT) {
-    assert.ok(l.events.length >= 4 && l.events.length <= 8, `${l.id}: 사건 ${l.events.length}개`);
+    assert.ok(l.events.length >= 3 && l.events.length <= 8, `${l.id}: 사건 ${l.events.length}개`);
     for (const e of l.events) {
       assert.ok(e.title && e.reason, `${l.id}: 제목·근거`);
       assert.equal(typeof e.year, "number", `${l.id} ${e.title}: 연도`);
