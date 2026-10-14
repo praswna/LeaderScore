@@ -1,13 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { roleOptions, type Role } from "./LeaderBrowser.tsx";
 import Seg from "./Seg.tsx";
 import { countryOf, formatScore, sortCountries, tone } from "@/lib/scoring.ts";
 import type { LeaderView } from "@/lib/types.ts";
+import { useWeights } from "@/lib/useWeights.ts";
+import { applyWeights, DEFAULT_WEIGHTS, describeWeights, isDefault } from "@/lib/weights.ts";
 
-export default function Ranking({ leaders }: { leaders: LeaderView[] }) {
+export default function Ranking({ leaders: baseLeaders }: { leaders: LeaderView[] }) {
+  const [weights, setWeights] = useWeights();
+  const leaders = useMemo(() => applyWeights(baseLeaders, weights), [baseLeaders, weights]);
   const [country, setCountry] = useState("");
   const [role, setRole] = useState<Role>("all");
 
@@ -29,6 +33,12 @@ export default function Ranking({ leaders }: { leaders: LeaderView[] }) {
         </select>
         <Seg options={roleOptions(inCountry)} value={role} onChange={setRole} />
       </div>
+      {!isDefault(weights) && (
+        <div className="weights-banner">
+          <span>보정치 적용 중 · {describeWeights(weights)}</span>
+          <button onClick={() => setWeights(DEFAULT_WEIGHTS)}>초기화</button>
+        </div>
+      )}
       <div className="list scroll-y">
         {ranked.length === 0 && <p className="empty">채점된 지도자가 없습니다.</p>}
         {ranked.map((l, i) => (

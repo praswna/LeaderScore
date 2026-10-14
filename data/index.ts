@@ -17,7 +17,7 @@ export type ContentLeader = {
   start: number | null;
   end: number | null;
   summary: string;
-  events: { year: number | null; title: string; description: string; score: number | null; reason: string }[];
+  events: { year: number | null; title: string; description: string; score: number | null; reason: string; category: string }[];
 };
 
 export const CONTENT_DATE = "2026-10-14";
@@ -34,7 +34,7 @@ export function contentData(): Data {
     events.forEach((e, i) =>
       data.events.push({
         id: `${l.id}-${i + 1}`, leaderId: l.id, year: e.year, title: e.title,
-        description: e.description ?? "", score: e.score, reason: e.reason ?? "",
+        description: e.description ?? "", score: e.score, reason: e.reason ?? "", category: e.category ?? "",
       }),
     );
   }

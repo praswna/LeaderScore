@@ -82,13 +82,20 @@ export function sortEvents(events: LeaderEvent[], by: "time" | "score"): LeaderE
   );
 }
 
+/** 보정치로 소수가 생기면 0에서 먼 쪽으로 반올림 (2.5 → 3, −2.5 → −3) */
+export function roundScore(n: number): number {
+  return Math.sign(n) * Math.round(Math.abs(n));
+}
+
 export function formatScore(n: number): string {
-  return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0";
+  const r = roundScore(n);
+  return r > 0 ? `+${r}` : r < 0 ? `−${-r}` : "0";
 }
 
 /** 점수 부호에 따른 색 이름 (CSS 클래스) */
 export function tone(n: number): "pos" | "neg" | "zero" {
-  return n > 0 ? "pos" : n < 0 ? "neg" : "zero";
+  const r = roundScore(n);
+  return r > 0 ? "pos" : r < 0 ? "neg" : "zero";
 }
 
 export function formatReign(start: number | null, end: number | null): string {

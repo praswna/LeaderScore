@@ -1,7 +1,8 @@
 import { formatYear } from "./scoring.ts";
 import type { LeaderView, ScoreResult } from "./types.ts";
+import { CATEGORIES } from "./weights.ts";
 
-export const CRITERIA = ["경제", "군사·안보", "인권·민생", "문화·학문", "외교", "제도개혁", "장기적 영향"];
+export const CRITERIA: readonly string[] = CATEGORIES;
 
 export type Weights = Record<string, number>;
 

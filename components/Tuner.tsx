@@ -1,0 +1,37 @@
+"use client";
+
+import { useWeights } from "@/lib/useWeights.ts";
+import { CATEGORIES, DEFAULT_WEIGHTS, describeWeights, isDefault, WEIGHT_MAX, WEIGHT_MIN, WEIGHT_STEP } from "@/lib/weights.ts";
+
+/** 분야별 보정치 슬라이더. 접어 두면 현재 값 요약만 보인다. 값은 모든 카드·랭킹에 공통 */
+export default function Tuner() {
+  const [weights, setWeights] = useWeights();
+  return (
+    <details className="tuner">
+      <summary>
+        <span className="tuner-title">보정치</span>
+        <span className={`tuner-sum ${isDefault(weights) ? "" : "on"}`}>{describeWeights(weights)}</span>
+        <svg className="tuner-caret" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+      </summary>
+      <div className="tuner-body">
+        {CATEGORIES.map((c) => (
+          <label key={c} className="tuner-row">
+            <span>{c}</span>
+            <input
+              type="range"
+              min={WEIGHT_MIN}
+              max={WEIGHT_MAX}
+              step={WEIGHT_STEP}
+              value={weights[c]}
+              onChange={(e) => setWeights({ ...weights, [c]: Number(e.target.value) })}
+            />
+            <output className={weights[c] === 1 ? "" : "on"}>×{weights[c]}</output>
+          </label>
+        ))}
+        <button className="tuner-reset" onClick={() => setWeights(DEFAULT_WEIGHTS)} disabled={isDefault(weights)}>
+          초기화
+        </button>
+      </div>
+    </details>
+  );
+}

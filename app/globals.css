@@ -186,3 +186,25 @@ details.item { display: block; padding: 0; }
 .row-chev.next { right: 0; justify-content: flex-end; padding-right: 6px; background: linear-gradient(to left, var(--bg) 50%, transparent); }
 .row-chev.prev { left: 0; justify-content: flex-start; padding-left: 6px; background: linear-gradient(to right, var(--bg) 50%, transparent); }
 .tabs-1 { padding-bottom: 6px; }
+
+/* 보정치 */
+.total-box { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.tuner { margin-top: 16px; background: var(--raised); border-radius: 12px; }
+.tuner > summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; list-style: none; cursor: pointer; }
+.tuner > summary::-webkit-details-marker { display: none; }
+.tuner-title { font-size: 13px; font-weight: 700; }
+.tuner-sum { flex: 1; min-width: 0; font-size: 12px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tuner-sum.on { color: var(--pos); }
+.tuner-caret { color: var(--muted); transition: transform 0.15s; flex: none; }
+.tuner[open] .tuner-caret { transform: rotate(180deg); }
+.tuner-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.tuner-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.tuner-row span { width: 66px; flex: none; color: var(--muted); }
+.tuner-row input { flex: 1; min-width: 0; accent-color: var(--pos); height: 28px; }
+.tuner-row output { width: 36px; text-align: right; font-size: 12px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.tuner-row output.on { color: var(--pos); font-weight: 700; }
+.tuner-reset { align-self: flex-end; font-size: 12px; color: var(--muted); padding: 4px 2px; }
+.tuner-reset:disabled { opacity: 0.35; cursor: default; }
+.weights-banner { display: flex; align-items: center; gap: 8px; margin: 0 16px 6px; padding: 8px 12px; background: var(--raised); border-radius: 10px; font-size: 12px; }
+.weights-banner span { flex: 1; min-width: 0; color: var(--pos); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.weights-banner button { color: var(--muted); font-size: 12px; }

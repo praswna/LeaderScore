@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { CONTENT, contentData } from "./index.ts";
 import { COUNTRY_ORDER, OTHER_COUNTRY, isRuler } from "../lib/scoring.ts";
+import { CATEGORIES } from "../lib/weights.ts";
 
 const OFFICIAL_ROLES = new Set(["재상", "장군", "관료", "통감", "총리대신", "독립운동가"]);
 
@@ -26,6 +27,7 @@ test("사건은 3~8개, 점수는 −10~+10 정수(0 제외)", () => {
     for (const e of l.events) {
       assert.ok(e.title && e.reason, `${l.id}: 제목·근거`);
       assert.equal(typeof e.year, "number", `${l.id} ${e.title}: 연도`);
+      assert.ok((CATEGORIES as readonly string[]).includes(e.category), `${l.id} ${e.title}: 분야 ${e.category}`);
       assert.ok(Number.isInteger(e.score) && e.score! >= -10 && e.score! <= 10 && e.score !== 0, `${l.id} ${e.title}: ${e.score}`);
     }
   }

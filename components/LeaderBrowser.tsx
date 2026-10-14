@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ScrollRow from "./ScrollRow.tsx";
 import Seg from "./Seg.tsx";
 import {
@@ -8,6 +8,9 @@ import {
   sortLeadersByScore, sortLeadersByTime, tone,
 } from "@/lib/scoring.ts";
 import type { LeaderEvent, LeaderView } from "@/lib/types.ts";
+import { useWeights } from "@/lib/useWeights.ts";
+import { applyWeights } from "@/lib/weights.ts";
+import Tuner from "./Tuner.tsx";
 
 type View = "card" | "list";
 type Sort = "time" | "score";
@@ -21,7 +24,9 @@ export function roleOptions(leaders: LeaderView[]): [Role, string, number][] {
   return [["all", "전체", leaders.length], ["ruler", "통치자", rulers], ["official", "관료", leaders.length - rulers]];
 }
 
-export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
+export default function LeaderBrowser({ leaders: baseLeaders }: { leaders: LeaderView[] }) {
+  const [weights] = useWeights();
+  const leaders = useMemo(() => applyWeights(baseLeaders, weights), [baseLeaders, weights]);
   const countries = sortCountries(leaders.map(countryOf));
 
   const [country, setCountry] = useState(countries[0]);
@@ -33,12 +38,12 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
 
   // 랭킹에서 /?leader=id 로 들어오면 그 지도자의 탭과 카드로 이동 (페이지는 정적이라 주소는 브라우저에서 읽는다)
   useEffect(() => {
-    const focus = leaders.find((l) => l.id === new URLSearchParams(location.search).get("leader"));
+    const focus = baseLeaders.find((l) => l.id === new URLSearchParams(location.search).get("leader"));
     if (!focus) return;
     setCountry(countryOf(focus));
     setDynasty(focus.dynasty);
     setCardTarget(focus.id);
-  }, [leaders]);
+  }, [baseLeaders]);
 
   const inCountry = leaders.filter((l) => countryOf(l) === country);
   const dynasties = dynastiesOf(leaders, country);
@@ -147,20 +152,26 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
             <p className="meta">{l.role} · {formatReign(l.start, l.end)}</p>
             <h2 className="name">{l.name}</h2>
           </div>
-          {l.scored ? <span className={`total ${tone(l.total)}`}>{formatScore(l.total)}</span> : <span className="meta">미채점</span>}
+          {l.scored ? (
+            <div className="total-box">
+              <span className={`total ${tone(l.total)}`}>{formatScore(l.total)}</span>
+              {l.base && <span className="meta">기본 {formatScore(l.base.total)}</span>}
+            </div>
+          ) : <span className="meta">미채점</span>}
         </header>
         {l.scored ? (
           <>
             <Gauge merit={l.merit} fault={l.fault} />
             <div className="cols">
-              <div className="col">{events.filter((e) => e.score! > 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
-              <div className="col">{events.filter((e) => e.score! < 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
+              <div className="col">{events.filter((e) => (e.baseScore ?? e.score)! > 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
+              <div className="col">{events.filter((e) => (e.baseScore ?? e.score)! < 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
             </div>
           </>
         ) : (
           <div className="col">{events.map((e) => <EventItem key={e.id} e={e} />)}</div>
         )}
         {l.summary && <p className="summary">{l.summary}</p>}
+        {l.scored && <Tuner />}
       </div>
     </article>
   );
@@ -187,9 +198,9 @@ function EventItem({ e }: { e: LeaderEvent }) {
   const row = (
     <>
       <span className="ev-title">
-        <small>{formatYear(e.year)}</small>
+        <small>{formatYear(e.year)}{e.category && ` · ${e.category}`}</small>
         {e.title}
-        {e.score !== null && <i className={`bar ${tone(e.score)}-bg`} style={{ width: `${Math.abs(e.score) * 10}%` }} />}
+        {e.score !== null && <i className={`bar ${tone(e.score)}-bg`} style={{ width: `${Math.min(100, Math.abs(e.score) * 10)}%` }} />}
       </span>
       {e.score !== null && <b className={tone(e.score)}>{formatScore(e.score)}</b>}
     </>

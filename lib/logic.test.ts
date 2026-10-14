@@ -3,11 +3,12 @@ import { test } from "node:test";
 import { buildPrompt, parseResponse } from "./prompt.ts";
 import { buildViews, dynastiesOf, formatScore, isRuler, sortCountries } from "./scoring.ts";
 import type { Data, Leader } from "./types.ts";
+import { applyWeights, DEFAULT_WEIGHTS, describeWeights, sanitizeWeights } from "./weights.ts";
 
 const leader = (id: string, dynasty: string, start: number, country = "한국"): Leader =>
   ({ id, name: id, country, dynasty, role: "군주", start, end: null, summary: "", scoredAt: "" });
-const ev = (leaderId: string, n: number, year: number, title: string, score: number | null) =>
-  ({ id: `${leaderId}-${n}`, leaderId, year, title, description: "", score, reason: "" });
+const ev = (leaderId: string, n: number, year: number, title: string, score: number | null, category = "문화·학문") =>
+  ({ id: `${leaderId}-${n}`, leaderId, year, title, description: "", score, reason: "", category });
 
 const fixture: Data = {
   leaders: [
@@ -15,8 +16,8 @@ const fixture: Data = {
     leader("gwanggaeto", "삼국", 391), leader("gojong", "대한제국", 1863), leader("lincoln", "", 1861, "미국"),
   ],
   events: [
-    ev("sejong", 1, 1420, "집현전 확대", 7), ev("sejong", 2, 1432, "노비종모법 복귀", -3),
-    ev("sejong", 3, 1443, "훈민정음 창제", 10), ev("sejong", 4, 1444, "공법 시행", 5),
+    ev("sejong", 1, 1420, "집현전 확대", 7), ev("sejong", 2, 1432, "노비종모법 복귀", -3, "인권·민생"),
+    ev("sejong", 3, 1443, "훈민정음 창제", 10), ev("sejong", 4, 1444, "공법 시행", 5, "경제"),
     ev("munjong", 1, 1451, "고려사 완성", null), ev("lincoln", 1, 1863, "노예해방선언", 10),
   ],
 };
@@ -83,4 +84,30 @@ test("잘못된 응답은 이유와 함께 거부", () => {
   assert.match(bad('{"events":[{"id":"a","score":2.5},{"id":"b","score":1}]}'), /a 점수/);
   assert.match(bad('{"events":[{"id":"a","score":1}]}'), /채점되지 않은 사건: b/);
   assert.match(bad('{"events":[{"id":"a","score":1},{"id":"a","score":1}]}'), /중복/);
+});
+
+test("보정치: 기본값이면 그대로, 분야 비중을 곱해 다시 합산", () => {
+  assert.equal(applyWeights(views, DEFAULT_WEIGHTS), views);
+  const w = { ...DEFAULT_WEIGHTS, 경제: 2, "인권·민생": 3 };
+  const s = applyWeights(views, w).find((l) => l.id === "sejong")!;
+  // 공: 7 + 10 + 5×2 = 27, 과: −3×3 = −9
+  assert.equal(s.merit, 27);
+  assert.equal(s.fault, -9);
+  assert.equal(s.total, 18);
+  assert.deepEqual(s.base, { merit: 22, fault: -3, total: 19 });
+  assert.equal(s.events.find((e) => e.title === "공법 시행")!.baseScore, 5);
+  assert.equal(describeWeights(w), "경제 ×2 · 인권·민생 ×3");
+});
+
+test("보정치: 0이면 그 분야를 빼고, 소수는 0에서 먼 쪽으로 반올림", () => {
+  const s = applyWeights(views, { ...DEFAULT_WEIGHTS, "인권·민생": 0, 경제: 0.5 }).find((l) => l.id === "sejong")!;
+  assert.equal(s.fault, 0);
+  assert.equal(s.merit, 19.5);
+  assert.equal(formatScore(19.5), "+20");
+  assert.equal(formatScore(-2.5), "−3");
+});
+
+test("저장된 보정치에서 잘못된 값은 기본값으로", () => {
+  assert.deepEqual(sanitizeWeights({ 경제: 9, 외교: "x", 군사: 2, "문화·학문": 1.3 }), { ...DEFAULT_WEIGHTS, "문화·학문": 1.5 });
+  assert.deepEqual(sanitizeWeights(null), DEFAULT_WEIGHTS);
 });
