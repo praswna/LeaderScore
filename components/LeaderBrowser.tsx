@@ -14,14 +14,19 @@ import Tuner from "./Tuner.tsx";
 
 type View = "card" | "list";
 type Sort = "time" | "score";
-export type Role = "all" | "ruler" | "official";
+export type Role = "all" | "ruler" | "official" | "thinker";
 
 const NO_DYNASTY = "";
 
-/** [전체|통치자|관료] 필터에 각 개수를 붙인다 */
+/** [전체|통치자|관료|사상·운동] 필터에 각 개수를 붙인다. 해당 인물이 없는 구분은 숨긴다 */
 export function roleOptions(leaders: LeaderView[]): [Role, string, number][] {
-  const rulers = leaders.filter((l) => l.isRuler).length;
-  return [["all", "전체", leaders.length], ["ruler", "통치자", rulers], ["official", "관료", leaders.length - rulers]];
+  const count = (g: Role) => leaders.filter((l) => l.group === g).length;
+  const groups: [Role, string, number][] = [["ruler", "통치자", count("ruler")], ["official", "관료", count("official")], ["thinker", "사상·운동", count("thinker")]];
+  return [["all", "전체", leaders.length], ...groups.filter(([, , n]) => n > 0)];
+}
+
+export function matchesRole(l: LeaderView, role: Role): boolean {
+  return role === "all" || l.group === role;
 }
 
 export default function LeaderBrowser({ leaders: baseLeaders }: { leaders: LeaderView[] }) {
@@ -83,7 +88,7 @@ export default function LeaderBrowser({ leaders: baseLeaders }: { leaders: Leade
       ) : (
         <List
           leaders={(sort === "time" ? sortLeadersByTime : sortLeadersByScore)(
-            shown.filter((l) => role === "all" || (role === "ruler") === l.isRuler),
+            shown.filter((l) => matchesRole(l, role)),
           )}
           onPick={(id) => { setCardTarget(id); setView("card"); }}
         />

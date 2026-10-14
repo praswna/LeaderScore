@@ -35,6 +35,7 @@ export type LeaderView = Leader & {
   total: number;
   scored: boolean;
   isRuler: boolean;
+  group: "ruler" | "official" | "thinker";
   /** 보정치를 적용했을 때 원래 공·과·종합 */
   base?: { merit: number; fault: number; total: number };
 };

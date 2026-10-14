@@ -4,7 +4,7 @@ import { CONTENT, contentData } from "./index.ts";
 import { COUNTRY_ORDER, OTHER_COUNTRY, isRuler } from "../lib/scoring.ts";
 import { CATEGORIES } from "../lib/weights.ts";
 
-const OFFICIAL_ROLES = new Set(["재상", "장군", "관료", "통감", "총리대신", "독립운동가"]);
+const OTHER_ROLES = new Set(["재상", "장군", "관료", "통감", "총독", "총리대신", "사상가", "독립운동가", "혁명가", "운동가"]);
 
 test("지도자 id가 고유하고 형식이 맞다", () => {
   const ids = CONTENT.map((l) => l.id);
@@ -15,7 +15,7 @@ test("지도자 id가 고유하고 형식이 맞다", () => {
 test("국가와 구분 값이 정해진 목록 안에 있다", () => {
   for (const l of CONTENT) {
     assert.ok([...COUNTRY_ORDER, OTHER_COUNTRY].includes(l.country), `${l.id}: 국가 ${l.country}`);
-    assert.ok(isRuler(l.role) || OFFICIAL_ROLES.has(l.role), `${l.id}: 구분 ${l.role}`);
+    assert.ok(isRuler(l.role) || OTHER_ROLES.has(l.role), `${l.id}: 구분 ${l.role}`);
     assert.ok(l.name && l.summary, `${l.id}: 이름·총평`);
     assert.equal(typeof l.start, "number", `${l.id}: 재위시작`);
   }

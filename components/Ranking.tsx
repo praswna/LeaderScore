@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { roleOptions, type Role } from "./LeaderBrowser.tsx";
+import { matchesRole, roleOptions, type Role } from "./LeaderBrowser.tsx";
 import Seg from "./Seg.tsx";
 import { countryOf, formatScore, sortCountries, tone } from "@/lib/scoring.ts";
 import type { LeaderView } from "@/lib/types.ts";
@@ -18,7 +18,7 @@ export default function Ranking({ leaders: baseLeaders }: { leaders: LeaderView[
   const scored = leaders.filter((l) => l.scored);
   const inCountry = scored.filter((l) => !country || countryOf(l) === country);
   const ranked = inCountry
-    .filter((l) => role === "all" || (role === "ruler") === l.isRuler)
+    .filter((l) => matchesRole(l, role))
     .sort((a, b) => b.total - a.total);
 
   return (

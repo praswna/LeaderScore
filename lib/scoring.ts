@@ -8,8 +8,18 @@ const RULER_ROLES = new Set([
   "대통령", "총리", "수상", "주석", "총통", "실권자", "섭정",
 ]);
 
+const THINKER_ROLES = new Set(["사상가", "독립운동가", "혁명가", "운동가"]);
+
+export type RoleGroup = "ruler" | "official" | "thinker";
+
 export function isRuler(role: string): boolean {
   return RULER_ROLES.has(role.trim());
+}
+
+/** 통치자 / 사상·운동 / 그 외는 관료 */
+export function roleGroup(role: string): RoleGroup {
+  const r = role.trim();
+  return RULER_ROLES.has(r) ? "ruler" : THINKER_ROLES.has(r) ? "thinker" : "official";
 }
 
 export function sumScores(events: LeaderEvent[]) {
@@ -38,6 +48,7 @@ export function buildViews(data: Data): LeaderView[] {
       ...sumScores(events),
       scored: events.length > 0 && events.every((e) => e.score !== null),
       isRuler: isRuler(l.role),
+      group: roleGroup(l.role),
     };
   });
 }

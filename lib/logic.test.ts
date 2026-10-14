@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildPrompt, parseResponse } from "./prompt.ts";
-import { buildViews, dynastiesOf, formatScore, isRuler, sortCountries } from "./scoring.ts";
+import { buildViews, dynastiesOf, formatScore, isRuler, roleGroup, sortCountries } from "./scoring.ts";
 import type { Data, Leader } from "./types.ts";
 import { applyWeights, DEFAULT_WEIGHTS, describeWeights, sanitizeWeights } from "./weights.ts";
 
@@ -41,6 +41,10 @@ test("통치자/관료 구분", () => {
   assert.equal(isRuler("쇼군"), true);
   assert.equal(isRuler("재상"), false);
   assert.equal(isRuler("총리대신"), false);
+  assert.equal(roleGroup("사상가"), "thinker");
+  assert.equal(roleGroup("독립운동가"), "thinker");
+  assert.equal(roleGroup("총독"), "official");
+  assert.equal(roleGroup("황제"), "ruler");
 });
 
 test("국가는 고정 순서, 모르는 나라는 기타 앞", () => {
