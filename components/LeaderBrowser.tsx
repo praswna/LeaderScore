@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import ScrollRow from "./ScrollRow.tsx";
 import Seg from "./Seg.tsx";
 import {
-  countryOf, dynastiesOf, formatReign, formatScore, formatYear, roundScore, sortCountries, sortEvents,
+  countryOf, dynastiesOf, formatReign, formatScore, formatYear, sortCountries, sortEvents,
   sortLeadersByScore, sortLeadersByTime, tone,
 } from "@/lib/scoring.ts";
 import type { LeaderEvent, LeaderView } from "@/lib/types.ts";
@@ -153,10 +153,7 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
             <h2 className="name">{l.name}</h2>
           </div>
           {l.scored ? (
-            <div className="total-box">
-              <span className={`total ${tone(l.total)}`}>{formatScore(l.total)}</span>
-              {l.base && roundScore(l.base.total) !== roundScore(l.total) && <span className="meta">기본 {formatScore(l.base.total)}</span>}
-            </div>
+            <span className={`total ${tone(l.total)}`}>{formatScore(l.total)}</span>
           ) : <span className="meta">미채점</span>}
         </header>
         {l.scored ? (
