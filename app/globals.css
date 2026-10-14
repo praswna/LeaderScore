@@ -175,7 +175,14 @@ details.item { display: block; padding: 0; }
 .chevron.next { right: 0; background: linear-gradient(to left, var(--bg) 55%, transparent); justify-content: flex-end; padding-right: 4px; }
 .chevron.prev { left: 0; background: linear-gradient(to right, var(--bg) 55%, transparent); justify-content: flex-start; padding-left: 4px; }
 
-/* 마우스 환경: 옆으로 숨는 탭 대신 여러 줄로 모두 보이게 */
-@media (hover: hover) and (pointer: fine) {
-  .tabs-1, .tabs-2 { flex-wrap: wrap; row-gap: 8px; }
+/* 칩 줄 — 옆으로 넘기기. 넘칠 때만 양끝에 화살표 */
+.scroll-row { position: relative; }
+.scroll-row .scroll-x { user-select: none; }
+.row-chev {
+  position: absolute; top: 0; bottom: 0; width: 36px;
+  display: flex; align-items: center; color: var(--muted);
 }
+.row-chev:hover { color: var(--fg); }
+.row-chev.next { right: 0; justify-content: flex-end; padding-right: 6px; background: linear-gradient(to left, var(--bg) 50%, transparent); }
+.row-chev.prev { left: 0; justify-content: flex-start; padding-left: 6px; background: linear-gradient(to right, var(--bg) 50%, transparent); }
+.tabs-1 { padding-bottom: 6px; }

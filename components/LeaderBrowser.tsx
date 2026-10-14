@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ScrollRow from "./ScrollRow.tsx";
 import Seg from "./Seg.tsx";
 import {
   countryOf, dynastiesOf, formatReign, formatScore, formatYear, sortCountries, sortEvents,
@@ -49,21 +50,21 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
 
   return (
     <div className="page">
-      <div className="tabs-1 scroll-x">
+      <ScrollRow className="tabs-1" activeKey={country}>
         {countries.map((c) => (
           <button key={c} className={c === country ? "on" : ""} onClick={() => { setCountry(c); setDynasty(null); }}>
             {c}<span className="count">{leaders.filter((l) => countryOf(l) === c).length}</span>
           </button>
         ))}
-      </div>
+      </ScrollRow>
       {dynasties.length > 0 && (
-        <div className="tabs-2 scroll-x">
+        <ScrollRow className="tabs-2" activeKey={`${country}/${dynasty}`}>
           {dynasties.map((d) => (
             <button key={d || "-"} className={d === dynasty ? "on" : ""} onClick={() => setDynasty(d)}>
               {d || "기타"}<span className="count">{inCountry.filter((l) => l.dynasty === d).length}</span>
             </button>
           ))}
-        </div>
+        </ScrollRow>
       )}
       <div className="toolbar">
         <Seg options={[["card", "카드"], ["list", "리스트"]]} value={view} onChange={setView} />
@@ -175,8 +176,8 @@ function Gauge({ merit, fault }: { merit: number; fault: number }) {
         <div className="neg-bg" style={{ width: `${(-fault / sum) * 100}%` }} />
       </div>
       <div className="gauge-label">
-        <span className="pos">공 {formatScore(merit)}</span>
-        <span className="neg">과 {formatScore(fault)}</span>
+        <span className={tone(merit)}>공 {formatScore(merit)}</span>
+        <span className={tone(fault)}>과 {formatScore(fault)}</span>
       </div>
     </>
   );
