@@ -2,7 +2,7 @@ import { sumScores } from "./scoring.ts";
 import type { LeaderView } from "./types.ts";
 
 /** 사건 분야. 보정치 슬라이더와 AI 프롬프트 칩이 같은 목록을 쓴다 */
-export const CATEGORIES = ["경제", "군사·안보", "인권·민생", "문화·학문", "외교", "정치·제도"] as const;
+export const CATEGORIES = ["경제", "외교·안보", "인권·민생", "문화·학문", "정치·제도"] as const;
 export type Category = (typeof CATEGORIES)[number];
 
 export type Weights = Record<Category, number>;
