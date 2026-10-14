@@ -27,9 +27,9 @@
   .eras.sub .era.on { text-decoration: underline; text-underline-offset: 5px; }
 
   /* 보기/정렬 툴바 */
-  .tools { display: flex; align-items: center; gap: 8px; padding: 8px 16px; border-top: 1.5px solid #222; border-bottom: 1.5px solid #222; font-size: 13px; }
+  .tools { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border-top: 1.5px solid #222; border-bottom: 1.5px solid #222; font-size: 13px; }
   .seg { display: flex; border: 1.5px solid #222; border-radius: 6px; overflow: hidden; }
-  .seg span { padding: 4px 10px; color: #999; }
+  .seg span { padding: 4px 7px; color: #999; white-space: nowrap; font-size: 12px; }
   .seg span.on { color: #222; text-decoration: underline; text-underline-offset: 4px; }
   .seg span + span { border-left: 1.5px solid #222; }
 
@@ -113,6 +113,7 @@
   <span class="arrow" style="top:58px">→</span>
   <div class="tools">
     <div class="seg"><span>카드</span><span class="on">리스트</span></div>
+    <div class="seg"><span class="on">전체</span><span>통치자</span><span>관료</span></div>
     <span class="sp"></span>
     <div class="seg"><span class="on">시간순</span><span>점수순</span></div>
   </div>
@@ -134,7 +135,7 @@
   <div class="title">랭킹</div>
   <div class="tools">
     <div class="box" style="padding:4px 10px">전체 국가 ▾</div>
-    <div class="box" style="padding:4px 10px">전체 구분 ▾</div>
+    <div class="seg"><span class="on">전체</span><span>통치자</span><span>관료</span></div>
     <span class="sp"></span>
     <span class="muted">종합점수순</span>
   </div>
