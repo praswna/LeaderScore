@@ -67,7 +67,7 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
       </div>
 
       {view === "card" ? (
-        <Cards leaders={sortLeadersByTime(shown)} sort={sort} targetId={cardTarget} />
+        <Cards key={`${country}/${dynasty ?? ""}`} leaders={sortLeadersByTime(shown)} sort={sort} targetId={cardTarget} />
       ) : (
         <List
           leaders={(sort === "time" ? sortLeadersByTime : sortLeadersByScore)(
@@ -82,18 +82,44 @@ export default function LeaderBrowser({ leaders }: { leaders: LeaderView[] }) {
 
 function Cards({ leaders, sort, targetId }: { leaders: LeaderView[]; sort: Sort; targetId?: string }) {
   const track = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
   const ids = leaders.map((l) => l.id).join();
+
   useEffect(() => {
     const el = targetId && track.current?.querySelector<HTMLElement>(`[data-id="${targetId}"]`);
     if (el) el.scrollIntoView({ block: "nearest", inline: "start" });
     else track.current?.scrollTo({ left: 0 });
   }, [targetId, ids]);
 
+  // 카드 한 장 너비(간격 포함)만큼 이동. 스와이프가 안 되는 PC용 버튼과 키보드 ← →
+  const step = () => {
+    const card = track.current?.querySelector<HTMLElement>(".card");
+    return card ? card.offsetWidth + parseFloat(getComputedStyle(track.current!).columnGap || "0") : 0;
+  };
+  const go = (dir: 1 | -1) => track.current?.scrollBy({ left: dir * step(), behavior: "smooth" });
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      if (e.key === "ArrowRight") go(1);
+      if (e.key === "ArrowLeft") go(-1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   if (!leaders.length) return <p className="empty">지도자가 없습니다.</p>;
   return (
-    <div className="track" ref={track}>
-      {leaders.map((l) => <Card key={l.id} leader={l} sort={sort} />)}
-    </div>
+    <>
+      <div className="track" ref={track} onScroll={(e) => setIndex(Math.round(e.currentTarget.scrollLeft / (step() || 1)))}>
+        {leaders.map((l) => <Card key={l.id} leader={l} sort={sort} />)}
+      </div>
+      <div className="pager">
+        <button className="pager-btn" onClick={() => go(-1)} disabled={index <= 0} aria-label="이전 지도자">‹</button>
+        <span>{Math.min(index + 1, leaders.length)} / {leaders.length}</span>
+        <button className="pager-btn" onClick={() => go(1)} disabled={index >= leaders.length - 1} aria-label="다음 지도자">›</button>
+      </div>
+    </>
   );
 }
 
