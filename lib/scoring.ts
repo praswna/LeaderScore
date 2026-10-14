@@ -3,7 +3,10 @@ import type { Data, LeaderEvent, LeaderView } from "./types.ts";
 export const COUNTRY_ORDER = ["한국", "중국", "일본", "미국", "유럽", "러시아"];
 export const OTHER_COUNTRY = "기타";
 
-const RULER_ROLES = new Set(["군주", "왕", "황제", "대통령", "총리", "수상", "실권자", "섭정"]);
+const RULER_ROLES = new Set([
+  "군주", "왕", "황제", "천황", "쇼군", "칸", "술탄", "파라오",
+  "대통령", "총리", "수상", "주석", "총통", "실권자", "섭정",
+]);
 
 export function isRuler(role: string): boolean {
   return RULER_ROLES.has(role.trim());

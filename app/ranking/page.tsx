@@ -1,6 +1,6 @@
 import Ranking from "@/components/Ranking.tsx";
 import { buildViews } from "@/lib/scoring.ts";
-import { getData } from "@/lib/sheets.ts";
+import { getData } from "@/lib/db.ts";
 
 export const dynamic = "force-dynamic";
 

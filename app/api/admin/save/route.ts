@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isAdmin } from "@/lib/auth.ts";
 import { parseResponse } from "@/lib/prompt.ts";
-import { getData, saveScores } from "@/lib/sheets.ts";
+import { getData, saveScores } from "@/lib/db.ts";
 
 export async function POST(req: Request) {
   if (!(await isAdmin())) return NextResponse.json({ error: "관리자 로그인이 필요합니다" }, { status: 401 });

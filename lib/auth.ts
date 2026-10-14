@@ -1,7 +1,7 @@
 import "server-only";
 import { createHash, timingSafeEqual } from "node:crypto";
 import { cookies } from "next/headers";
-import { isSampleMode } from "./sheets.ts";
+import { isSampleMode } from "./db.ts";
 
 export const ADMIN_COOKIE = "ls_admin";
 

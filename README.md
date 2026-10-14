@@ -10,42 +10,43 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-환경변수가 없으면 **샘플 데이터 모드**로 실행됩니다. 관리자 비밀번호는 `admin`이고, 채점 결과는 서버 메모리에만 저장됩니다.
+DB 환경변수가 없으면 `data/*.json`에 있는 내용으로 바로 동작합니다(샘플 모드). 이때 관리자 비밀번호는 `admin`이고, 채점 저장은 서버 메모리에만 남습니다.
 
 ```bash
-npm test           # 점수 계산, 프롬프트, 응답 검증
+npm test           # 점수 계산·프롬프트·응답 검증 + 내용 데이터 검사
 npm run typecheck
 npm run build
+npm run seed       # data/*.json → supabase/seed.sql 다시 생성
 ```
 
-## 구글시트 연결
+## Supabase 연결
 
-1. **시트 만들기:** 새 구글시트에 탭 두 개(`leaders`, `events`)를 만듭니다. `sheet-template/`의 CSV를 각 탭에 가져오면 헤더와 샘플 지도자가 들어갑니다(파일 → 가져오기 → 현재 시트 바꾸기). 점수 칸은 비어 있으니 앱에서 채점하면 됩니다.
-2. **서비스 계정 키 만들기:** [Google Cloud 콘솔](https://console.cloud.google.com/)에서 프로젝트를 만들고 **Google Sheets API**를 켭니다. **IAM → 서비스 계정**에서 계정을 만든 뒤 **키 → JSON 키 추가**로 키 파일을 받습니다.
-3. **시트 공유:** 시트를 서비스 계정 이메일(`...@...iam.gserviceaccount.com`)에 **편집자**로 공유합니다.
-4. **환경변수 설정:** `.env.example`을 `.env.local`로 복사해서 채웁니다.
-   - `GOOGLE_SHEET_ID`: 시트 URL의 `/d/`와 `/edit` 사이 값
-   - `GOOGLE_SERVICE_ACCOUNT_KEY`: JSON 키 파일 내용 전체를 한 줄로
-   - `ADMIN_PASSWORD`: 관리자 비밀번호
+1. **프로젝트 만들기:** [supabase.com](https://supabase.com)에 가입하고 **New project**를 누릅니다. 이름은 자유, DB 비밀번호는 아무거나(앱에서는 안 씁니다), Region은 **Northeast Asia (Seoul)**.
+2. **표 만들기:** 왼쪽 메뉴 **SQL Editor**에서 `supabase/schema.sql` 내용을 통째로 붙여넣고 **Run**.
+3. **내용 넣기:** SQL Editor에서 새 쿼리를 열고 `supabase/seed.sql` 내용을 붙여넣고 **Run**. **Table Editor**에서 `leaders`, `events` 표에 데이터가 보이면 성공입니다.
+4. **키 복사:** **Project Settings → API Keys**(또는 상단 **Connect** 버튼)에서 두 가지를 복사합니다.
+   - Project URL (`https://xxxx.supabase.co`)
+   - **secret** 키 (`sb_secret_...`). 예전 프로젝트라면 Legacy 탭의 **service_role** 키. publishable / anon 키가 **아닙니다**.
+5. **환경변수:** `.env.example`을 `.env.local`로 복사해서 채웁니다.
+   ```
+   SUPABASE_URL=https://xxxx.supabase.co
+   SUPABASE_SECRET_KEY=sb_secret_...
+   ADMIN_PASSWORD=원하는비밀번호
+   ```
+6. `npm run dev` → **설정** 탭에 "샘플 데이터 모드" 안내가 사라졌으면 연결된 것입니다.
 
-배포(Vercel 등)할 때도 같은 환경변수 세 개를 넣으면 됩니다.
+secret 키는 DB 전체 권한이라 깃에 올리거나 남에게 보내면 안 됩니다. `.env.local`은 `.gitignore`에 들어 있습니다. 배포(Vercel 등)할 때는 같은 환경변수 세 개를 배포 설정에 넣습니다.
 
-## 시트 입력 규칙
+**무료 플랜 주의:** 7일 동안 요청이 없으면 프로젝트가 일시정지됩니다. 대시보드에서 **Restore**를 누르면 데이터 그대로 다시 켜집니다.
 
-| 탭 | 관리자가 입력 | 앱이 채점할 때 기록 |
-| --- | --- | --- |
-| `leaders` | `id`, `이름`, `국가`, `왕조`, `구분`, `재위시작`, `재위끝` | `총평`, `채점일` |
-| `events` | `id`, `지도자id`, `연도`, `제목`, `설명` | `점수`, `근거` |
+## 내용 관리
 
-- 열 순서는 자유입니다. 첫 행 헤더 이름으로 찾습니다.
-- `id`는 영문 등 겹치지 않는 값이면 됩니다. 사건의 `지도자id`는 leaders의 `id`와 같아야 합니다.
-- `국가`: 한국 / 중국 / 일본 / 미국 / 유럽 / 러시아 순으로 탭이 정렬되고, 그 외 나라는 기타 앞에 붙습니다.
-- `왕조`: 비워 두면 그 나라는 2단 탭 없이 보입니다. 왕조 탭은 재위가 가장 이른 지도자 기준 시간순입니다.
-- `구분`: 군주·왕·황제·대통령·총리·수상·실권자·섭정은 **통치자**, 그 외(재상, 장군, 총리대신 등)는 **관료**로 묶입니다.
-- 기원전 연도는 음수로 씁니다(예: `-221`).
-- 시트를 직접 고친 내용은 최대 60초 뒤에 앱에 반영됩니다. 앱에서 저장한 채점은 바로 반영됩니다.
+- 지도자·사건·점수의 원본은 `data/*.json`이고, 작성 기준은 `data/BRIEF.md`입니다.
+- 내용을 고친 뒤에는 `npm test`로 형식을 검사하고 `npm run seed`로 `supabase/seed.sql`을 다시 만든 다음, SQL Editor에서 실행합니다. 같은 id는 덮어씁니다.
+- 앱의 관리자 채점(설정 탭)으로 다시 매긴 점수는 DB에만 저장됩니다. seed를 다시 실행하면 원본 점수로 돌아가니 주의하세요.
+- 생존 인물은 수록하지 않았습니다.
 
 ## 채점 흐름
 
-설정 탭 → 관리자 로그인 → 지도자 선택 → **채점 프롬프트 복사** → ChatGPT·Claude 등 AI 채팅에 붙여넣기 → AI 응답을 앱에 붙여넣기 → **시트에 저장**.
+설정 탭 → 관리자 로그인 → 지도자 선택 → **채점 프롬프트 복사** → ChatGPT·Claude 등 AI 채팅에 붙여넣기 → AI 응답을 앱에 붙여넣기 → **저장**.
 저장할 때 JSON 형식, 사건 ID, 점수 범위(−10~+10 정수, 0 제외), 누락된 사건을 검사하고, 문제가 있으면 저장하지 않습니다.

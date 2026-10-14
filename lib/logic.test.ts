@@ -1,16 +1,32 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { buildPrompt, parseResponse } from "./prompt.ts";
-import { sampleData } from "./sample.ts";
 import { buildViews, dynastiesOf, formatScore, isRuler, sortCountries } from "./scoring.ts";
+import type { Data, Leader } from "./types.ts";
 
-const views = buildViews(sampleData());
+const leader = (id: string, dynasty: string, start: number, country = "한국"): Leader =>
+  ({ id, name: id, country, dynasty, role: "군주", start, end: null, summary: "", scoredAt: "" });
+const ev = (leaderId: string, n: number, year: number, title: string, score: number | null) =>
+  ({ id: `${leaderId}-${n}`, leaderId, year, title, description: "", score, reason: "" });
+
+const fixture: Data = {
+  leaders: [
+    leader("sejong", "조선", 1418), leader("munjong", "조선", 1450), leader("wanggeon", "고려", 918),
+    leader("gwanggaeto", "삼국", 391), leader("gojong", "대한제국", 1863), leader("lincoln", "", 1861, "미국"),
+  ],
+  events: [
+    ev("sejong", 1, 1420, "집현전 확대", 7), ev("sejong", 2, 1432, "노비종모법 복귀", -3),
+    ev("sejong", 3, 1443, "훈민정음 창제", 10), ev("sejong", 4, 1444, "공법 시행", 5),
+    ev("munjong", 1, 1451, "고려사 완성", null), ev("lincoln", 1, 1863, "노예해방선언", 10),
+  ],
+};
+const views = buildViews(fixture);
 const sejong = views.find((l) => l.id === "sejong")!;
 
 test("공·과·종합은 사건 점수 합", () => {
-  assert.equal(sejong.merit, 33);
+  assert.equal(sejong.merit, 22);
   assert.equal(sejong.fault, -3);
-  assert.equal(sejong.total, 30);
+  assert.equal(sejong.total, 19);
   assert.equal(sejong.scored, true);
 });
 
@@ -21,6 +37,7 @@ test("점수가 빈 사건이 있으면 미채점", () => {
 test("통치자/관료 구분", () => {
   assert.equal(isRuler("군주"), true);
   assert.equal(isRuler("대통령"), true);
+  assert.equal(isRuler("쇼군"), true);
   assert.equal(isRuler("재상"), false);
   assert.equal(isRuler("총리대신"), false);
 });

@@ -79,11 +79,11 @@ function Scoring({ leaders }: { leaders: LeaderView[] }) {
           <CopyButton text={buildPrompt(leader)} label="채점 프롬프트 복사" />
           <textarea className="input paste" placeholder="AI 응답 붙여넣기" value={response} onChange={(e) => setResponse(e.target.value)} />
           <button className="btn strong" onClick={save} disabled={!response.trim() || saving}>
-            {saving ? "저장 중…" : "시트에 저장"}
+            {saving ? "저장 중…" : "저장"}
           </button>
         </>
       ) : (
-        <p className="empty">사건이 등록된 지도자가 없습니다. 시트에 지도자와 사건을 먼저 입력하세요.</p>
+        <p className="empty">사건이 등록된 지도자가 없습니다.</p>
       )}
       {status && <p className={status.ok ? "ok" : "error"}>{status.text}</p>}
     </div>
