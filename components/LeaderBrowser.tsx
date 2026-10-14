@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import Seg from "./Seg.tsx";
 import {
-  countryOf, dynastiesOf, formatScore, formatYear, sortCountries, sortEvents,
-  sortLeadersByScore, sortLeadersByTime,
+  countryOf, dynastiesOf, formatReign, formatScore, formatYear, sortCountries, sortEvents,
+  sortLeadersByScore, sortLeadersByTime, tone,
 } from "@/lib/scoring.ts";
 import type { LeaderEvent, LeaderView } from "@/lib/types.ts";
 
@@ -101,23 +101,22 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
   const events = sortEvents(l.events, sort);
   return (
     <article className="card" data-id={l.id}>
-      <h2 className="name">{l.name}</h2>
-      <p className="sub">
-        <span className="muted">{l.role}</span>
-        {l.scored ? <>종합 <b>{formatScore(l.total)}</b></> : <span className="muted">미채점</span>}
-      </p>
       <div className="card-body">
-        {l.scored ? (
-          <div className="cols">
-            <div className="col">
-              <div className="head">공 {formatScore(l.merit)}</div>
-              {events.filter((e) => e.score! > 0).map((e) => <EventItem key={e.id} e={e} />)}
-            </div>
-            <div className="col">
-              <div className="head">과 {formatScore(l.fault)}</div>
-              {events.filter((e) => e.score! < 0).map((e) => <EventItem key={e.id} e={e} />)}
-            </div>
+        <header className="card-head">
+          <div className="sp">
+            <p className="meta">{l.role} · {formatReign(l.start, l.end)}</p>
+            <h2 className="name">{l.name}</h2>
           </div>
+          {l.scored ? <span className={`total ${tone(l.total)}`}>{formatScore(l.total)}</span> : <span className="meta">미채점</span>}
+        </header>
+        {l.scored ? (
+          <>
+            <Gauge merit={l.merit} fault={l.fault} />
+            <div className="cols">
+              <div className="col">{events.filter((e) => e.score! > 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
+              <div className="col">{events.filter((e) => e.score! < 0).map((e) => <EventItem key={e.id} e={e} />)}</div>
+            </div>
+          </>
         ) : (
           <div className="col">{events.map((e) => <EventItem key={e.id} e={e} />)}</div>
         )}
@@ -127,11 +126,32 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
   );
 }
 
+/** 공·과 비율 막대와 합계 */
+function Gauge({ merit, fault }: { merit: number; fault: number }) {
+  const sum = merit - fault || 1;
+  return (
+    <>
+      <div className="gauge">
+        <div className="pos-bg" style={{ width: `${(merit / sum) * 100}%` }} />
+        <div className="neg-bg" style={{ width: `${(-fault / sum) * 100}%` }} />
+      </div>
+      <div className="gauge-label">
+        <span className="pos">공 {formatScore(merit)}</span>
+        <span className="neg">과 {formatScore(fault)}</span>
+      </div>
+    </>
+  );
+}
+
 function EventItem({ e }: { e: LeaderEvent }) {
   const row = (
     <>
-      <span className="ev-title"><small>{formatYear(e.year)}</small>{e.title}</span>
-      <span>{e.score === null ? "" : formatScore(e.score)}</span>
+      <span className="ev-title">
+        <small>{formatYear(e.year)}</small>
+        {e.title}
+        {e.score !== null && <i className={`bar ${tone(e.score)}-bg`} style={{ width: `${Math.abs(e.score) * 10}%` }} />}
+      </span>
+      {e.score !== null && <b className={tone(e.score)}>{formatScore(e.score)}</b>}
     </>
   );
   const more = [e.description, e.reason].filter(Boolean);
@@ -156,9 +176,9 @@ function List({ leaders, onPick }: { leaders: LeaderView[]; onPick: (id: string)
           <span className="sp">{l.name} <small className="muted">{l.role} · {formatYear(l.start)}–</small></span>
           {l.scored ? (
             <>
-              <span className="num">{formatScore(l.merit)}</span>
-              <span className="num">{formatScore(l.fault)}</span>
-              <span className="num">{formatScore(l.total)}</span>
+              <span className={`num ${tone(l.merit)}`}>{formatScore(l.merit)}</span>
+              <span className={`num ${tone(l.fault)}`}>{formatScore(l.fault)}</span>
+              <b className={`num ${tone(l.total)}`}>{formatScore(l.total)}</b>
             </>
           ) : (
             <span className="muted">미채점</span>

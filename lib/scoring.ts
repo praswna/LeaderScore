@@ -86,6 +86,16 @@ export function formatScore(n: number): string {
   return n > 0 ? `+${n}` : n < 0 ? `−${-n}` : "0";
 }
 
+/** 점수 부호에 따른 색 이름 (CSS 클래스) */
+export function tone(n: number): "pos" | "neg" | "zero" {
+  return n > 0 ? "pos" : n < 0 ? "neg" : "zero";
+}
+
+export function formatReign(start: number | null, end: number | null): string {
+  if (start === null) return "";
+  return end === null || end === start ? formatYear(start) : `${formatYear(start)}–${formatYear(end)}`;
+}
+
 export function formatYear(y: number | null): string {
   if (y === null) return "";
   return y < 0 ? `BC ${-y}` : String(y);

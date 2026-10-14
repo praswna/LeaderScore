@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
+import { Noto_Sans_KR } from "next/font/google";
 import BottomNav from "@/components/BottomNav.tsx";
 import "./globals.css";
+
+const sans = Noto_Sans_KR({ weight: ["400", "500", "700", "900"], subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "LeaderScore",
@@ -10,12 +13,12 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#0e1014",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ko">
+    <html lang="ko" className={sans.variable}>
       <body>
         <div className="app">
           <main>{children}</main>

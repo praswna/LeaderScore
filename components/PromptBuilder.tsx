@@ -4,7 +4,7 @@ import { useState } from "react";
 import CopyButton from "./CopyButton.tsx";
 import LeaderSelect from "./LeaderSelect.tsx";
 import { buildPrompt, CRITERIA, parseResponse, type Weights } from "@/lib/prompt.ts";
-import { formatScore, sumScores } from "@/lib/scoring.ts";
+import { formatScore, sumScores, tone } from "@/lib/scoring.ts";
 import type { LeaderView } from "@/lib/types.ts";
 
 const MAX_WEIGHT = 3;
@@ -66,11 +66,11 @@ function Result({ leader, scores, summary }: {
     <section className="result">
       <div className="row">
         <span className="sp muted">결과 (저장 안 됨)</span>
-        <span className="big">{formatScore(leader.total)} → {formatScore(after.total)}</span>
+        <span className="big"><span className="muted">{formatScore(leader.total)} →</span> <b className={tone(after.total)}>{formatScore(after.total)}</b></span>
       </div>
       <div className="row muted small">
-        <span className="sp">공 {formatScore(leader.merit)} → {formatScore(after.merit)}</span>
-        <span>과 {formatScore(leader.fault)} → {formatScore(after.fault)}</span>
+        <span className="sp">공 {formatScore(leader.merit)} → <span className="pos">{formatScore(after.merit)}</span></span>
+        <span>과 {formatScore(leader.fault)} → <span className="neg">{formatScore(after.fault)}</span></span>
       </div>
       <div className="diff">
         {leader.events.map((e) => {
@@ -79,7 +79,7 @@ function Result({ leader, scores, summary }: {
             <div key={e.id} className="row small">
               <span className="sp">{e.title}</span>
               <span className="muted">{formatScore(e.score!)} →</span>
-              <span className={s !== e.score ? "changed" : ""}>{formatScore(s)}</span>
+              <span className={`${tone(s)} ${s !== e.score ? "changed" : ""}`}>{formatScore(s)}</span>
             </div>
           );
         })}
