@@ -14,6 +14,10 @@ import russiaOther from "./russia-other.json" with { type: "json" };
 import russiaOther2 from "./russia-other-2.json" with { type: "json" };
 import usEurope from "./us-europe.json" with { type: "json" };
 import usEurope2 from "./us-europe-2.json" with { type: "json" };
+import villainsChinaJapan from "./villains-china-japan.json" with { type: "json" };
+import villainsEurope from "./villains-europe.json" with { type: "json" };
+import villainsKorea from "./villains-korea.json" with { type: "json" };
+import villainsWorld from "./villains-world.json" with { type: "json" };
 
 // 지도자·사건 원본. 앱의 모든 내용이 여기서 나온다.
 
@@ -34,6 +38,7 @@ export const CONTENT_DATE = "2026-10-14";
 export const CONTENT: ContentLeader[] = [
   ...koreaAncient, ...koreaAncient2, ...koreaJoseon, ...koreaJoseon2, ...koreaColonial, ...koreaModern, ...koreaModern2,
   ...chinaJapan, ...china2, ...japan2, ...usEurope, ...usEurope2, ...europeModern, ...russiaOther, ...russiaOther2,
+  ...villainsKorea, ...villainsChinaJapan, ...villainsEurope, ...villainsWorld,
 ] as ContentLeader[];
 
 export function contentData(): Data {
