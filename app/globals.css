@@ -193,11 +193,14 @@ details.item { display: block; padding: 0; }
 .tabs-1 { padding-bottom: 6px; }
 
 /* 보정치 */
-/* 카드 아래에 고정되어 사건 목록과 따로 떠 있는 보정치 */
-.card-foot { flex: none; padding: 0 10px 10px; border-top: 1px solid var(--line-soft); padding-top: 10px; }
+/* 카드 아래쪽에 떠 있는 보정치. 사건 목록은 그 밑으로 지나가며 스크롤된다 */
+.card { position: relative; }
+.card:has(.card-foot) .card-body { padding-bottom: 76px; }
+.card-foot { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 1; }
 .tuner-bar {
   width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-align: left;
-  background: var(--raised); border-radius: 12px; cursor: pointer;
+  background: var(--raised); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.45);
 }
 .tuner-bar.open { border-radius: 12px 12px 0 0; }
 .tuner-title { font-size: 13px; font-weight: 700; }
