@@ -195,16 +195,23 @@ details.item { display: block; padding: 0; }
 /* 보정치 */
 /* 카드 아래에 고정되어 사건 목록과 따로 떠 있는 보정치 */
 .card-foot { flex: none; padding: 0 10px 10px; border-top: 1px solid var(--line-soft); padding-top: 10px; }
-.tuner { background: var(--raised); border-radius: 12px; }
-.tuner[open] .tuner-body { max-height: 42vh; overflow-y: auto; }
-.tuner > summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; list-style: none; cursor: pointer; }
-.tuner > summary::-webkit-details-marker { display: none; }
+.tuner-bar {
+  width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-align: left;
+  background: var(--raised); border-radius: 12px; cursor: pointer;
+}
+.tuner-bar.open { border-radius: 12px 12px 0 0; }
 .tuner-title { font-size: 13px; font-weight: 700; }
 .tuner-sum { flex: 1; min-width: 0; font-size: 12px; color: var(--faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tuner-sum.on { color: var(--pos); }
 .tuner-caret { color: var(--muted); transition: transform 0.15s; flex: none; }
-.tuner[open] .tuner-caret { transform: rotate(180deg); }
-.tuner-body { padding: 0 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+.tuner-bar.open .tuner-caret { transform: rotate(180deg); }
+/* 막대 바로 아래에서 하단 메뉴를 덮으며 화면 끝까지 열린다. 넘치면 패널 안에서 스크롤 */
+.tuner-panel {
+  position: fixed; bottom: 0; z-index: 20; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--raised); border-top: 1px solid var(--line-soft);
+  padding: 4px 14px calc(14px + env(safe-area-inset-bottom));
+  display: flex; flex-direction: column; gap: 10px;
+}
 .tuner-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
 .tuner-row span { width: 66px; flex: none; color: var(--muted); }
 .tuner-row input { flex: 1; min-width: 0; accent-color: var(--pos); height: 28px; }
