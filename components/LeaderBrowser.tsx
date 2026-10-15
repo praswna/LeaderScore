@@ -10,7 +10,7 @@ import {
 import type { LeaderEvent, LeaderView } from "@/lib/types.ts";
 import { useWeights } from "@/lib/useWeights.ts";
 import { applyWeights } from "@/lib/weights.ts";
-import Tuner, { TunerPanel } from "./Tuner.tsx";
+import Tuner from "./Tuner.tsx";
 
 type View = "card" | "list";
 type Sort = "time" | "score";
@@ -138,7 +138,6 @@ function Cards({ leaders, sort, targetId }: { leaders: LeaderView[]; sort: Sort;
           <Tuner />
         </div>
       )}
-      <TunerPanel />
     </div>
   );
 }
