@@ -193,10 +193,10 @@ details.item { display: block; padding: 0; }
 .tabs-1 { padding-bottom: 6px; }
 
 /* 보정치 */
-/* 카드 아래쪽에 떠 있는 보정치. 사건 목록은 그 밑으로 지나가며 스크롤된다 */
-.card { position: relative; }
-.card:has(.card-foot) .card-body { padding-bottom: 76px; }
-.card-foot { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 1; }
+/* 카드 아래쪽에 떠 있는 보정치. 카드를 넘겨도 따라 움직이지 않고 제자리에 있다.
+   위치는 .track 의 여백(좌 16px, 아래 12px)과 카드 너비(100% - 36px)에 맞춘 값 */
+.card.has-tuner .card-body { padding-bottom: 76px; }
+.card-foot { position: absolute; left: 26px; right: 62px; bottom: 22px; z-index: 2; }
 .tuner-bar {
   width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 14px; text-align: left;
   background: var(--raised); border: 1px solid var(--line); border-radius: 12px; cursor: pointer;

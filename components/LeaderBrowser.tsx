@@ -133,6 +133,11 @@ function Cards({ leaders, sort, targetId }: { leaders: LeaderView[]; sort: Sort;
       </div>
       {index > 0 && <Chevron dir={-1} onClick={() => go(-1)} />}
       {index < leaders.length - 1 && <Chevron dir={1} onClick={() => go(1)} />}
+      {leaders[index]?.scored && (
+        <div className="card-foot">
+          <Tuner />
+        </div>
+      )}
       <TunerPanel />
     </div>
   );
@@ -151,7 +156,7 @@ function Chevron({ dir, onClick }: { dir: 1 | -1; onClick: () => void }) {
 function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
   const events = sortEvents(l.events, sort);
   return (
-    <article className="card" data-id={l.id}>
+    <article className={`card ${l.scored ? "has-tuner" : ""}`} data-id={l.id}>
       <div className="card-body">
         <header className="card-head">
           <div className="sp">
@@ -175,11 +180,6 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
         )}
         {l.summary && <p className="summary">{l.summary}</p>}
       </div>
-      {l.scored && (
-        <div className="card-foot">
-          <Tuner />
-        </div>
-      )}
     </article>
   );
 }
