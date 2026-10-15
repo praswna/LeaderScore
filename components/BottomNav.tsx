@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import BuildStamp from "@/components/BuildStamp.tsx";
 
 const TABS = [
   { href: "/", label: "지도자", icon: "M4 20c0-4 4-6 8-6s8 2 8 6M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8" },
@@ -24,6 +25,7 @@ export default function BottomNav() {
           </Link>
         );
       })}
+      <BuildStamp />
     </nav>
   );
 }
