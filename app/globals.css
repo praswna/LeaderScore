@@ -188,7 +188,10 @@ details.item { display: block; padding: 0; }
 .tabs-1 { padding-bottom: 6px; }
 
 /* 보정치 */
-.tuner { margin-top: 16px; background: var(--raised); border-radius: 12px; }
+/* 카드 아래에 고정되어 사건 목록과 따로 떠 있는 보정치 */
+.card-foot { flex: none; padding: 0 10px 10px; border-top: 1px solid var(--line-soft); padding-top: 10px; }
+.tuner { background: var(--raised); border-radius: 12px; }
+.tuner[open] .tuner-body { max-height: 42vh; overflow-y: auto; }
 .tuner > summary { display: flex; align-items: center; gap: 10px; padding: 12px 14px; list-style: none; cursor: pointer; }
 .tuner > summary::-webkit-details-marker { display: none; }
 .tuner-title { font-size: 13px; font-weight: 700; }
