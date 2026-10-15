@@ -173,8 +173,12 @@ function Card({ leader: l, sort }: { leader: LeaderView; sort: Sort }) {
           <div className="col">{events.map((e) => <EventItem key={e.id} e={e} />)}</div>
         )}
         {l.summary && <p className="summary">{l.summary}</p>}
-        {l.scored && <Tuner />}
       </div>
+      {l.scored && (
+        <div className="card-foot">
+          <Tuner />
+        </div>
+      )}
     </article>
   );
 }
